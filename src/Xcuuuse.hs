@@ -1,4 +1,4 @@
-import Prelude
+module Xcuuuse (Formula(..)) where
 
 data Formula =  Var String 
                 | Negation Formula 
