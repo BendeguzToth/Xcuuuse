@@ -1,14 +1,16 @@
-module Xcuuuse (Formula(..)) where
+module Xcuuuse (Formula(..), prettyPrint) where
 
 data Formula =  Var String 
+                | Parenthesised Formula
                 | Negation Formula 
                 | Conjunction Formula Formula
                 | Disjunction Formula Formula
                 | Implication Formula Formula
-                | Equivalence Formula Formula
+                | Equivalence Formula Formula deriving(Show)
 
 instance Eq Formula where
     (Var s1) == (Var s2) = s1 == s2
+    (Parenthesised f1) == (Parenthesised f2) = f1 == f2
     (Negation f1) == (Negation f2) = f1 == f2
     (Conjunction f1 f2) == (Conjunction e1 e2)  | f1 == e1 && f2 == e2 = True
                                                 | f1 == e2 && f2 == e1 = True
@@ -20,13 +22,14 @@ instance Eq Formula where
     (Equivalence f1 f2) == (Equivalence e1 e2) = f1 == e1 && f2 == e2
     _ == _ = False
 
-instance Show Formula where
-    show (Var s) = s
-    show (Negation f) = "-" ++ (show f)
-    show (Conjunction f1 f2) = (show f1) ++ "/\\" ++ (show f2)
-    show (Disjunction f1 f2) = (show f1) ++ "\\/" ++ (show f2)
-    show (Implication f1 f2) = (show f1) ++ "=>" ++ (show f2)
-    show (Equivalence f1 f2) = (show f1) ++ "<=>" ++ (show f2)
+
+prettyPrint (Var s) = s
+prettyPrint (Parenthesised f) = "(" ++ (prettyPrint f) ++ ")"
+prettyPrint (Negation f) = "-" ++ (prettyPrint f)
+prettyPrint (Conjunction f1 f2) = (prettyPrint f1) ++ "/\\" ++ (prettyPrint f2)
+prettyPrint (Disjunction f1 f2) = (prettyPrint f1) ++ "\\/" ++ (prettyPrint f2)
+prettyPrint (Implication f1 f2) = (prettyPrint f1) ++ "=>" ++ (prettyPrint f2)
+prettyPrint (Equivalence f1 f2) = (prettyPrint f1) ++ "<=>" ++ (prettyPrint f2)
 
 
 conjunctionIntroduction :: Formula -> Formula -> Formula -> Bool

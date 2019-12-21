@@ -102,3 +102,9 @@ white = greedy $ satisfy (`elem` [' ', '\n', '\t'])
 choice :: [Parser a b] -> Parser a b
 choice [] = failp
 choice ps = foldl1 (<|>) ps
+
+chainl :: Parser s a -> Parser s (a->a->a) -> Parser s a
+chainl p s = foldl (flip ($)) <$> p <*> many (flip <$> s <*> p)
+
+chainr :: Parser s a -> Parser s (a->a->a) -> Parser s a
+chainr p s = flip (foldr ($)) <$> many (flip ($) <$> p <*> s) <*> p

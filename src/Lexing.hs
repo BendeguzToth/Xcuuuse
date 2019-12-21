@@ -3,7 +3,7 @@ module Lexing where
 import Prelude hiding ((<*>), (<$>), (<*), (*>), (<$))
 import ParserLib
 
-data Token = Tvar String | Tneg | Tcon | Tdis | Timp |Teq | Open | Close deriving(Show)
+data Token = Tvar String | Tneg | Tcon | Tdis | Timp |Teq | Topen | Tclose deriving(Show, Eq)
 
 lVarsym :: Parser Char Token
 lVarsym = (\l r-> Tvar (l:r)) <$> uppercase <*> many (digit <|> symbol '\'')
@@ -24,10 +24,10 @@ lEqsym :: Parser Char Token
 lEqsym = Teq <$ symbol '=' <|> Teq <$ token "<=>"
 
 lOpensym :: Parser Char Token
-lOpensym = Open <$ symbol '('
+lOpensym = Topen <$ symbol '('
 
 lClosesym :: Parser Char Token
-lClosesym = Close <$ symbol ')'
+lClosesym = Tclose <$ symbol ')'
 
 tokenize :: Parser Char [Token]
 tokenize = white *> (many (choice [lVarsym, lNegsym, lConsym, lDissym, lImpsym, lEqsym, lOpensym, lClosesym]) <* white) <* eof ()
