@@ -1,4 +1,11 @@
-module Xcuuuse (Formula(..), prettyPrint) where
+module Xcuuuse (Formula(..),
+                Proof(..),
+                Line(..), 
+                prettyPrint) where
+
+data Proof = Proof [Line] deriving(Show)
+
+data Line = Form Int Formula | Conc Formula deriving(Show)
 
 data Formula =  Var String 
                 | Parenthesised Formula

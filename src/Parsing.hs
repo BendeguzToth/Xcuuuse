@@ -22,9 +22,23 @@ prec5 = (\(Tvar s) ->Var s) <$> satisfy isTvar
         <|> Parenthesised <$ symbol Topen <*> prec1 <* symbol Tclose 
         <|> Negation <$ symbol Tneg <*> prec5
 
+pFormula :: Parser Token Formula
+pFormula = prec1
+
+pNat :: Parser Token Int
+pNat = (\(Tnum n)-> n) <$> satisfy isNum
+
+pLine :: Parser Token Line
+pLine = Form <$> pNat <*> pFormula <* greedy (symbol Tnewline) <|> Conc <$ symbol Tthen <*> pFormula <* greedy (symbol Tnewline)
+
+pProof :: Parser Token Proof
+pProof = Proof <$> many pLine <* eof ()
 
 isTvar (Tvar _) = True
 isTvar _ = False
+
+isNum (Tnum _) = True
+isNum _ = False
 
 
 parse :: Parser s a -> [s] -> a

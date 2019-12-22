@@ -97,7 +97,10 @@ uppercase :: Parser Char Char
 uppercase = satisfy (`elem`['A'..'Z'])
 
 white :: Parser Char String
-white = greedy $ satisfy (`elem` [' ', '\n', '\t'])
+white = greedy $ satisfy (`elem` [' ', '\t'])
+
+allWhite :: Parser Char String
+allWhite = greedy $ satisfy (`elem` [' ', '\t', '\n'])
 
 choice :: [Parser a b] -> Parser a b
 choice [] = failp
