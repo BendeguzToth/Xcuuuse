@@ -29,25 +29,25 @@ pNat :: Parser Token Int
 pNat = (\(Tnum n)-> n) <$> satisfy isNum
 
 pRuleType :: Parser Token RuleType
-pRuleType = Introduction <$ symbol TIntroduction <|> Elimination <$ symbol TElimination
+pRuleType = Introduction <$ symbol Tintroduction <|> Elimination <$ symbol Telimination
 
 pRuleStep :: Parser Token RuleStep
 pRuleStep = RNegation <$ symbol Tneg <|> RConjunction <$ symbol Tcon <|> RDisjunction <$ symbol Tdis <|> RImplication <$ symbol Timp <|> REquivalence <$ symbol Teq
 
 pReference :: Parser Token Reference
-pReference = (\x->ListReference (map (\(Tnum n) -> n) x)) <$> listOf (satisfy isNum) (symbol TComma)
+pReference = (\x->ListReference (map (\(Tnum n) -> n) x)) <$> listOf (satisfy isNum) (symbol Tcomma)
 
 pJustification :: Parser Token Justification
 pJustification = Justification <$> pRuleStep <*> pRuleType <*> pReference
 
 pPremise :: Parser Token Line
-pPremise = Premise <$> pNat <* symbol TPremise <*> pFormula 
+pPremise = Premise <$> pNat <* symbol Tpremise <*> pFormula 
 
 pConclusion :: Parser Token Line
 pConclusion = Conclusion <$ symbol Tthen <*> pFormula
 
 pDerivation :: Parser Token Line
-pDerivation = Derivation <$> pNat <*> pFormula <* symbol TSemicolon <*> pJustification
+pDerivation = Derivation <$> pNat <*> pFormula <* symbol Tsemicolon <*> pJustification
 
 pLine :: Parser Token Line
 pLine = (pPremise <|> pConclusion <|> pDerivation) <* greedy (symbol Tnewline)
