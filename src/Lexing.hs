@@ -4,7 +4,8 @@ import Prelude hiding ((<*>), (<$>), (<*), (*>), (<$))
 import ParserLib
 
 data Token = Tvar   String | Tneg | Tcon | Tdis | Timp |Teq | Topen | Tclose
-                    | Tnewline | Tthen | Tnum Int
+                    | Tnewline | Tthen | Tnum Int | TPremise | TSemicolon | TComma
+                    | TIntroduction | TElimination
                     deriving(Show, Eq)
 
 lVarsym :: Parser Char Token
@@ -40,5 +41,21 @@ lThensym = Tthen <$ token "|-"
 lNumsym :: Parser Char Token
 lNumsym = Tnum . read . (:[]) <$> digit
 
+lPremise :: Parser Char Token
+lPremise = TPremise <$ symbol 'p'
+
+lSemicolon :: Parser Char Token
+lSemicolon = TSemicolon <$ symbol ';'
+
+lComma :: Parser Char Token
+lComma = TComma <$ symbol ','
+
+lIntroduction :: Parser Char Token
+lIntroduction = TIntroduction <$ symbol 'i'
+
+lElimination :: Parser Char Token
+lElimination = TElimination <$ symbol 'e'
+
 tokenize :: Parser Char [Token]
-tokenize = allWhite *> (many (choice [lVarsym, lNegsym, lConsym, lDissym, lImpsym, lEqsym, lOpensym, lClosesym, lNlsym, lThensym, lNumsym] <* white)) <* eof ()
+tokenize = allWhite *> (many (choice [lVarsym, lNegsym, lConsym, lDissym, lImpsym, lEqsym, lOpensym, lClosesym,
+                                     lNlsym, lThensym, lNumsym, lPremise, lSemicolon, lComma, lIntroduction, lElimination] <* white)) <* eof ()

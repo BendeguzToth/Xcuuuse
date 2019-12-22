@@ -19,7 +19,7 @@ prec4 = chainl prec5 (Conjunction <$ symbol Tcon)
 
 prec5 :: Parser Token Formula
 prec5 = (\(Tvar s) ->Var s) <$> satisfy isTvar 
-        <|> Parenthesised <$ symbol Topen <*> prec1 <* symbol Tclose 
+        <|> symbol Topen *> prec1 <* symbol Tclose 
         <|> Negation <$ symbol Tneg <*> prec5
 
 pFormula :: Parser Token Formula
@@ -28,8 +28,29 @@ pFormula = prec1
 pNat :: Parser Token Int
 pNat = (\(Tnum n)-> n) <$> satisfy isNum
 
+pRuleType :: Parser Token RuleType
+pRuleType = Introduction <$ symbol TIntroduction <|> Elimination <$ symbol TElimination
+
+pRuleStep :: Parser Token RuleStep
+pRuleStep = RNegation <$ symbol Tneg <|> RConjunction <$ symbol Tcon <|> RDisjunction <$ symbol Tdis <|> RImplication <$ symbol Timp <|> REquivalence <$ symbol Teq
+
+pReference :: Parser Token Reference
+pReference = (\x->ListReference (map (\(Tnum n) -> n) x)) <$> listOf (satisfy isNum) (symbol TComma)
+
+pJustification :: Parser Token Justification
+pJustification = Justification <$> pRuleStep <*> pRuleType <*> pReference
+
+pPremise :: Parser Token Line
+pPremise = Premise <$> pNat <* symbol TPremise <*> pFormula 
+
+pConclusion :: Parser Token Line
+pConclusion = Conclusion <$ symbol Tthen <*> pFormula
+
+pDerivation :: Parser Token Line
+pDerivation = Derivation <$> pNat <*> pFormula <* symbol TSemicolon <*> pJustification
+
 pLine :: Parser Token Line
-pLine = Form <$> pNat <*> pFormula <* greedy (symbol Tnewline) <|> Conc <$ symbol Tthen <*> pFormula <* greedy (symbol Tnewline)
+pLine = (pPremise <|> pConclusion <|> pDerivation) <* greedy (symbol Tnewline)
 
 pProof :: Parser Token Proof
 pProof = Proof <$> many pLine <* eof ()
@@ -42,5 +63,7 @@ isNum _ = False
 
 
 parse :: Parser s a -> [s] -> a
-parse p s = let (x, r) =head $ p s
+parse p s = let (x, r) = head $ p s
             in x
+
+fullParse xs = parse pFormula (parse tokenize xs)

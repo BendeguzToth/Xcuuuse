@@ -1,23 +1,35 @@
 module Xcuuuse (Formula(..),
                 Proof(..),
-                Line(..), 
+                Line(..),
+                Justification(..),
+                Reference(..),
+                RuleType(..),
+                RuleStep(..), 
                 prettyPrint) where
 
 data Proof = Proof [Line] deriving(Show)
 
-data Line = Form Int Formula | Conc Formula deriving(Show)
+data Line =     Premise Int Formula 
+                | Conclusion Formula 
+                | Derivation Int Formula Justification deriving(Show)
 
 data Formula =  Var String 
-                | Parenthesised Formula
                 | Negation Formula 
                 | Conjunction Formula Formula
                 | Disjunction Formula Formula
                 | Implication Formula Formula
                 | Equivalence Formula Formula deriving(Show)
 
+data Justification = Justification RuleStep RuleType Reference deriving(Show)
+
+data Reference = ListReference [Int] deriving(Show)
+
+data RuleType = Introduction | Elimination deriving(Show)
+
+data RuleStep = RNegation | RConjunction | RDisjunction | RImplication | REquivalence deriving(Show)
+
 instance Eq Formula where
     (Var s1) == (Var s2) = s1 == s2
-    (Parenthesised f1) == (Parenthesised f2) = f1 == f2
     (Negation f1) == (Negation f2) = f1 == f2
     (Conjunction f1 f2) == (Conjunction e1 e2)  | f1 == e1 && f2 == e2 = True
                                                 | f1 == e2 && f2 == e1 = True
@@ -31,12 +43,11 @@ instance Eq Formula where
 
 
 prettyPrint (Var s) = s
-prettyPrint (Parenthesised f) = "(" ++ (prettyPrint f) ++ ")"
-prettyPrint (Negation f) = "-" ++ (prettyPrint f)
-prettyPrint (Conjunction f1 f2) = (prettyPrint f1) ++ "/\\" ++ (prettyPrint f2)
-prettyPrint (Disjunction f1 f2) = (prettyPrint f1) ++ "\\/" ++ (prettyPrint f2)
-prettyPrint (Implication f1 f2) = (prettyPrint f1) ++ "=>" ++ (prettyPrint f2)
-prettyPrint (Equivalence f1 f2) = (prettyPrint f1) ++ "<=>" ++ (prettyPrint f2)
+prettyPrint (Negation f) = "(" ++ "-" ++ (prettyPrint f) ++ ")"
+prettyPrint (Conjunction f1 f2) = "(" ++ (prettyPrint f1) ++ "/\\" ++ (prettyPrint f2) ++ ")"
+prettyPrint (Disjunction f1 f2) = "(" ++ (prettyPrint f1) ++ "\\/" ++ (prettyPrint f2) ++ ")"
+prettyPrint (Implication f1 f2) = "(" ++ (prettyPrint f1) ++ "=>" ++ (prettyPrint f2) ++ ")"
+prettyPrint (Equivalence f1 f2) = "(" ++ (prettyPrint f1) ++ "<=>" ++ (prettyPrint f2) ++ ")"
 
 
 conjunctionIntroduction :: Formula -> Formula -> Formula -> Bool

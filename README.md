@@ -6,7 +6,12 @@ how to build: `ghc --make -shared -fPIC Xcuuuse.hs -o xcuuus.so`
 ## Grammar
 
 *Proof* ::= *Line*\*  
-*Line* ::= *Natural* *Formula* | *Thensym* *Formula*  
+*Line* :: = *Premise* | *Conclusion* | *Derivation*  
+*Premise* ::= *Natural* p *Formula*  
+*Conclusion* ::= *Thensym* *Formula*  
+*Derivation* ::= *Natural* *Formula* ; *Justification*  
+*Justification* ::= *Symbol* *RuleType* *Reference*  
+*Reference* ::= *Natural* (, *Natural*)\*  
 *Formula* ::= *Variable* | ( *Formula* ) | *Negation* | *Conjunction* | *Disjunction* | *Implication* | *Equivalence*  
 *Variable* ::= *Uppercase* | *Variable* *Num* | *Variable* '  
 *Negation* ::= *Negsym* *Formula*  
@@ -14,6 +19,7 @@ how to build: `ghc --make -shared -fPIC Xcuuuse.hs -o xcuuus.so`
 *Disjunction* ::= *Formula* *Dissym* *Formula*  
 *Implication* ::= *Formula* *Impsym* *Formula*  
 *Equivalence* ::= *Formula* *Eqsym* *Formula*  
+*Symbol* := *Negsym* | *Consym* | *Dissym* | *Impsym* | *Eqsym*  
 
 
 *Num* ::= 0|...|9  
@@ -24,4 +30,5 @@ how to build: `ghc --make -shared -fPIC Xcuuuse.hs -o xcuuus.so`
 *Dissym* ::= v | \\/ | '||'  
 *Impsym* ::= -> | =>  
 *Eqsym* ::= = | <=>  
-*Thensym* ::= '|-'
+*Thensym* ::= '|-'  
+*RuleType* ::= i | e
