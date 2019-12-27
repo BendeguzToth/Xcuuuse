@@ -1,4 +1,5 @@
 module Xcuuuse (Formula(..),
+                Scope(..),
                 Proof(..),
                 Line(..),
                 Justification(..),
@@ -11,18 +12,21 @@ data Proof = Proof [Line] deriving(Show)
 
 data Line =     Premise Int Formula 
                 | Conclusion Formula 
-                | Derivation Int Formula Justification deriving(Show)
+                | Derivation Int Scope Formula Justification deriving(Show)
 
 data Formula =  Var String 
                 | Negation Formula 
                 | Conjunction Formula Formula
                 | Disjunction Formula Formula
                 | Implication Formula Formula
-                | Equivalence Formula Formula deriving(Show)
+                | Equivalence Formula Formula 
+                | Contradiction deriving(Show)
 
-data Justification = Justification RuleStep RuleType Reference deriving(Show)
+data Scope = Start Int | Continue Int deriving(Show)
 
-data Reference = ListReference [Int] deriving(Show)
+data Justification = Justification RuleStep RuleType [Reference] deriving(Show)
+
+data Reference = SingleLine Int | Range Int Int deriving(Show)
 
 data RuleType = Introduction | Elimination deriving(Show)
 

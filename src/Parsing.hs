@@ -20,7 +20,9 @@ prec4 = chainl prec5 (Conjunction <$ symbol Tcon)
 prec5 :: Parser Token Formula
 prec5 = (\(Tvar s) ->Var s) <$> satisfy isTvar 
         <|> symbol Topen *> prec1 <* symbol Tclose 
-        <|> Negation <$ symbol Tneg <*> prec5
+        -- Hyphen is overloaded.
+        <|> Negation <$ symbol Tneg <*> prec5 <|> Negation <$ symbol Thyphen <*> prec5
+        <|> Contradiction <$ symbol Tcont
 
 pFormula :: Parser Token Formula
 pFormula = prec1
@@ -34,23 +36,33 @@ pRuleType = Introduction <$ symbol Tintroduction <|> Elimination <$ symbol Telim
 pRuleStep :: Parser Token RuleStep
 pRuleStep = RNegation <$ symbol Tneg <|> RConjunction <$ symbol Tcon <|> RDisjunction <$ symbol Tdis <|> RImplication <$ symbol Timp <|> REquivalence <$ symbol Teq
 
-pReference :: Parser Token Reference
-pReference = (\x->ListReference (map (\(Tnum n) -> n) x)) <$> listOf (satisfy isNum) (symbol Tcomma)
+pRange :: Parser Token Reference
+pRange = Range <$> pNat <* symbol Thyphen <*> pNat
+
+pSingleRef :: Parser Token Reference
+pSingleRef = SingleLine <$> pNat
+
+pReferenceList :: Parser Token [Reference]
+pReferenceList = listOf (pRange <|> pSingleRef) (symbol Tcomma)
 
 pJustification :: Parser Token Justification
-pJustification = Justification <$> pRuleStep <*> pRuleType <*> pReference
+pJustification = Justification <$> pRuleStep <*> pRuleType <*> pReferenceList
 
 pPremise :: Parser Token Line
-pPremise = Premise <$> pNat <* symbol Tpremise <*> pFormula 
+pPremise = Premise <$> pNat <*> pFormula <* symbol Tpremise
 
 pConclusion :: Parser Token Line
-pConclusion = Conclusion <$ symbol Tthen <*> pFormula
+pConclusion = Conclusion <$ symbol Tvertical <* symbol Thyphen <*> pFormula
 
 pDerivation :: Parser Token Line
-pDerivation = Derivation <$> pNat <*> pFormula <* symbol Tsemicolon <*> pJustification
+pDerivation = Derivation <$> pNat <*> pScope <*> pFormula <*> pJustification
 
 pLine :: Parser Token Line
 pLine = (pPremise <|> pConclusion <|> pDerivation) <* greedy (symbol Tnewline)
+
+pScope :: Parser Token Scope
+pScope =    Continue . length <$> greedy (symbol Tvertical)
+            <|> Start . length <$> greedy (symbol Tvertical) <* symbol Tstar
 
 pProof :: Parser Token Proof
 pProof = Proof <$> many pLine <* eof ()
@@ -63,7 +75,8 @@ isNum _ = False
 
 
 parse :: Parser s a -> [s] -> a
-parse p s = let (x, r) = head $ p s
-            in x
+parse p s = let ps = p s
+                (x, r) = head $ ps
+            in if length ps == 1 then x else error "Ambiguous grammar."
 
 fullParse xs = parse pFormula (parse tokenize xs)
