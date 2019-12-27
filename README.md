@@ -5,7 +5,7 @@ how to build: `ghc --make -shared -fPIC Xcuuuse.hs -o xcuuus.so`
 
 ## Grammar
 
-*Proof* ::= (*Premise*)\* *Conclusion* (*Derivation*)\*  
+*Proof* ::= (*Premise*)\* *Conclusion* (*Derivation*)\+  
 *Premise* ::= *Natural* *Formula* p  
 *Conclusion* ::= *Thensym* *Formula*  
 *Derivation* ::= *Natural* *Scope* *Formula* *Justification*  

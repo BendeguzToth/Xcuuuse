@@ -12,7 +12,7 @@ prec2 :: Parser Token Formula
 prec2 = chainr prec3 (Implication <$ symbol Timp)
 
 prec3 :: Parser Token Formula
-prec3 = chainl prec4 (Disjunction <$ symbol Tdis)
+prec3 = chainl prec4 (Disjunction <$ (symbol Tdis <|> symbol Tvertical <* symbol Tvertical))
 
 prec4 :: Parser Token Formula
 prec4 = chainl prec5 (Conjunction <$ symbol Tcon)
@@ -28,7 +28,7 @@ pFormula :: Parser Token Formula
 pFormula = prec1
 
 pNat :: Parser Token Int
-pNat = (\(Tnum n)-> n) <$> satisfy isNum
+pNat = foldl (\acc (Tnum n)-> 10*acc + n) 0 <$> greedy (satisfy isNum)
 
 pRuleType :: Parser Token RuleType
 pRuleType = Introduction <$ symbol Tintroduction <|> Elimination <$ symbol Telimination
@@ -57,15 +57,12 @@ pConclusion = Conclusion <$ symbol Tvertical <* symbol Thyphen <*> pFormula
 pDerivation :: Parser Token Line
 pDerivation = Derivation <$> pNat <*> pScope <*> pFormula <*> pJustification
 
-pLine :: Parser Token Line
-pLine = (pPremise <|> pConclusion <|> pDerivation) <* greedy (symbol Tnewline)
-
 pScope :: Parser Token Scope
 pScope =    Continue . length <$> greedy (symbol Tvertical)
             <|> Start . length <$> greedy (symbol Tvertical) <* symbol Tstar
 
 pProof :: Parser Token Proof
-pProof = Proof <$> many pLine <* eof ()
+pProof = Proof <$> many (pPremise <* greedy (symbol Tnewline)) <*> (pConclusion <* greedy (symbol Tnewline)) <*> some (pDerivation <* greedy (symbol Tnewline)) <* eof ()
 
 isTvar (Tvar _) = True
 isTvar _ = False

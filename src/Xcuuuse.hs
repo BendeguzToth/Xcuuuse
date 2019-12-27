@@ -6,13 +6,18 @@ module Xcuuuse (Formula(..),
                 Reference(..),
                 RuleType(..),
                 RuleStep(..), 
-                prettyPrint) where
+                prettyPrint,
+                checkNumbering) where
 
-data Proof = Proof [Line] deriving(Show)
+data Proof = Proof {premises :: [Line], conclusion :: Line, derivations :: [Line]} deriving(Show)
 
 data Line =     Premise Int Formula 
                 | Conclusion Formula 
                 | Derivation Int Scope Formula Justification deriving(Show)
+
+lineNumber :: Line -> Int
+lineNumber (Premise i _) = i
+lineNumber (Derivation i _ _ _) = i
 
 data Formula =  Var String 
                 | Negation Formula 
@@ -67,3 +72,10 @@ doubleNegationIntroduction p f = Negation (Negation p) == f
 doubleNegationElimination :: Formula -> Formula -> Bool
 doubleNegationElimination (Negation (Negation p)) f = f == p
 doubleNegationElimination _ _ = False
+
+-- Checking if line numbering is done the correct way.
+checkNumbering :: Proof -> Bool
+checkNumbering (Proof p c d) = let  pl = length p
+                                    premOk = all id (map (\(p', n') -> lineNumber p' == n') (zip p [1..]))
+                                    derOk  = all id (map (\(d', n') -> lineNumber d' == n') (zip d [1+pl..]))
+                                    in premOk && derOk

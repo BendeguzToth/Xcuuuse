@@ -19,7 +19,7 @@ lConsym :: Parser Char Token
 lConsym = Tcon <$ symbol '&' <|> Tcon <$ token "/\\"
 
 lDissym :: Parser Char Token
-lDissym = Tdis <$ symbol 'v' <|> Tdis <$ token "\\/" <|> Tdis <$ token "||"
+lDissym = Tdis <$ symbol 'v' <|> Tdis <$ token "\\/"
 
 lImpsym :: Parser Char Token
 lImpsym = Timp <$ token "->" <|> Timp <$ token "=>"
