@@ -6,7 +6,7 @@ import Xcuuuse
 import Control.Monad
 main :: IO ()
 main = do
-    x <- readFile "../data/test.proof"
+    x <- readFile "../data/distributivity.proof"
     let tokens = parse tokenize x
         ast@(Proof ps c ds) = parse pProof tokens
     print ast
