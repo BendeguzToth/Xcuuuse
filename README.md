@@ -3,21 +3,41 @@ Proof checker
 
 how to build: `ghc --make -shared -fPIC Xcuuuse.hs -o xcuuus.so`
 
-## Rules for propositional logic
+## List of rules
 
-* Conjuntion introduction
-* Conjunction elimination
-* Double negation introduction
-* Double negation elimination
-* Disjunction introduction
-* Disjunction elimination
-* Implication introduction
-* Implication elimination (modus potens)
-* Modus tollens
-* copy/reiterate
-* Contradiction elimination
-* Negation elimination
-* Negation introduction
+List of rules supported by Xcuuuse. The number and types (single line or range of box) are listed. The order of references does not matter, as long as they are of the correct type.
+
+**Conjuntion introduction**  
+![](rules/conjunction_i.png)  
+**Conjunction elimination**  
+![](rules/conjunction_e.png)  
+**Double negation introduction**  
+![](rules/dn_i.png)  
+**Double negation elimination**  
+![](rules/dn_e.png)  
+**Implication introduction**  
+![](rules/implies_i.png)  
+**Implication elimination (modus ponens)**  
+![](rules/implies_e.png)  
+**Modus tollens**  
+![](rules/mt.png)  
+**Disjunction introduction**  
+![](rules/disjunction_i.png)  
+**Disjunction elimination**  
+![](rules/disjunction_i.png)  
+**Reiterate**  
+![](rules/reiterate.png)  
+**Contradiction elimination**  
+![](rules/contradiction_e.png)  
+**Negation introduction**  
+![](rules/negation_i.png)  
+**Negation elimination**  
+![](rules/negation_e.png)  
+**Proof by contradiction (reductio ad absurdum)**  
+![](rules/pbc.png)  
+**Law of excluded middle (tertium non datur)**  
+![](rules/lem.png)  
+
 
 ## Grammar
 
