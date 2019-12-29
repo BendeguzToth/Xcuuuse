@@ -3,6 +3,22 @@ Proof checker
 
 how to build: `ghc --make -shared -fPIC Xcuuuse.hs -o xcuuus.so`
 
+## Rules for propositional logic
+
+* Conjuntion introduction
+* Conjunction elimination
+* Double negation introduction
+* Double negation elimination
+* Disjunction introduction
+* Disjunction elimination
+* Implication introduction
+* Implication elimination (modus potens)
+* Modus tollens
+* copy/reiterate
+* Contradiction elimination
+* Negation elimination
+* Negation introduction
+
 ## Grammar
 
 *Proof* ::= (*Premise*)\* *Conclusion* (*Derivation*)\+  
