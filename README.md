@@ -24,7 +24,7 @@ List of rules supported by Xcuuuse. The number and types (single line or range o
 **Disjunction introduction**  
 ![](rules/disjunction_i.png)  
 **Disjunction elimination**  
-![](rules/disjunction_i.png)  
+![](rules/disjunction_e.png)  
 **Reiterate**  
 ![](rules/reiterate.png)  
 **Contradiction elimination**  
