@@ -2,10 +2,8 @@ module Xcuuuse (Formula(..),
                 Scope(..),
                 Proof(..),
                 Line(..),
-                Justification(..),
-                Reference(..),
-                RuleType(..),
-                RuleStep(..), 
+                Rule(..),
+                Reference(..), 
                 prettyPrint,
                 checkNumbering) where
 
@@ -13,7 +11,7 @@ data Proof = Proof {premises :: [Line], conclusion :: Line, derivations :: [Line
 
 data Line =     Premise Int Formula 
                 | Conclusion Formula 
-                | Derivation Int Scope Formula Justification deriving(Show)
+                | Derivation Int Scope Formula Rule deriving(Show)
 
 lineNumber :: Line -> Int
 lineNumber (Premise i _) = i
@@ -29,13 +27,24 @@ data Formula =  Var String
 
 data Scope = Start Int | Continue Int deriving(Show)
 
-data Justification = Justification RuleStep RuleType [Reference] deriving(Show)
+data Rule = ConjunctionI Reference Reference
+            | ConjunctionE Reference
+            | DoubleNegationI Reference
+            | DoubleNegationE Reference
+            | ImplicationI Reference
+            | ImplicationE Reference Reference
+            | ModusTollens Reference Reference
+            | DisjunctionI Reference
+            | DisjunctionE Reference Reference Reference
+            | Reiterate Reference
+            | ContradictionE Reference
+            | NegationI Reference
+            | NegationE Reference Reference
+            | PBC Reference
+            | LEM 
+            | Assumption deriving(Show)
 
 data Reference = SingleLine Int | Range Int Int deriving(Show)
-
-data RuleType = Introduction | Elimination deriving(Show)
-
-data RuleStep = RNegation | RConjunction | RDisjunction | RImplication | REquivalence deriving(Show)
 
 instance Eq Formula where
     (Var s1) == (Var s2) = s1 == s2

@@ -5,7 +5,8 @@ import ParserLib
 
 data Token = Tvar   String | Tneg | Tcon | Tdis | Timp |Teq | Tcont | Topen | Tclose
                     | Tnewline | Tnum Int | Tpremise | Tcomma | Thyphen
-                    | Tintroduction | Telimination | Tvertical | Tstar
+                    | Tintroduction | Telimination | Tvertical | Tstar | Tassumption
+                    | Tmt | Tpbc | Tlem | Treiterate
                     deriving(Show, Eq)
 
 lVarsym :: Parser Char Token
@@ -64,7 +65,22 @@ lVertical = Tvertical <$ symbol '|'
 lStar :: Parser Char Token
 lStar = Tstar <$ symbol '*'
 
+lAssumption :: Parser Char Token
+lAssumption = Tassumption <$ token "ass"
+
+lMT :: Parser Char Token
+lMT = Tmt <$ token "mt"
+
+lPBC :: Parser Char Token
+lPBC = Tpbc <$ token "pbc"
+
+lLEM :: Parser Char Token
+lLEM = Tlem <$ token "lem"
+
+lReiterate :: Parser Char Token
+lReiterate = Treiterate <$ symbol 'r'
+
 tokenize :: Parser Char [Token]
 tokenize = allWhite *> (many (choice [lVarsym, lNegsym, lConsym, lDissym, lImpsym, lEqsym, lContsym, lOpensym, lClosesym,
                                      lNlsym, lNumsym, lPremise, lComma, lHyphen, lIntroduction, lElimination, lVertical,
-                                     lStar] <* white)) <* eof ()
+                                     lStar, lAssumption, lMT, lPBC, lLEM, lReiterate] <* white)) <* eof ()

@@ -10,5 +10,5 @@ main = do
     let tokens = parse tokenize x
         ast = parse pProof tokens
     print ast
-    print $ checkNumbering ast
+    -- print $ checkNumbering ast
     return ()
