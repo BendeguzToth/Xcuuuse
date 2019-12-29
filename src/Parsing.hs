@@ -35,26 +35,29 @@ pNegation :: Parser Token Token
 pNegation = symbol Tneg <|> symbol Thyphen
 
 pRange :: Parser Token Reference
-pRange = Range <$> pNat <* symbol Thyphen <*> pNat <* option (symbol Tcomma) Tcomma
+pRange = Range <$ option (symbol Tcomma) Tcomma <*> pNat <* symbol Thyphen <*> pNat
 
 pSingleRef :: Parser Token Reference
-pSingleRef = SingleLine <$> pNat <* option (symbol Tcomma) Tcomma
+pSingleRef = SingleLine <$ option (symbol Tcomma) Tcomma <*> pNat
+
+pRef :: Parser Token Reference
+pRef = pRange <|> pSingleRef
 
 pRule :: Parser Token Rule
-pRule = ConjunctionI <$ symbol Tcon <* symbol Tintroduction <*> pSingleRef <*> pSingleRef
-        <|> ConjunctionE <$ symbol Tcon <* symbol Telimination <*> pSingleRef
-        <|> DoubleNegationI <$ pNegation <* pNegation <* symbol Tintroduction <*> pSingleRef
-        <|> DoubleNegationE <$ pNegation <* pNegation <* symbol Telimination <*> pSingleRef
-        <|> ImplicationI <$ symbol Timp <* symbol Tintroduction <*> pRange
-        <|> ImplicationE <$ symbol Timp <* symbol Telimination <*> pSingleRef <*> pSingleRef
-        <|> ModusTollens <$ symbol Tmt <*> pSingleRef <*> pSingleRef
-        <|> DisjunctionI <$ symbol Tdis <* symbol Tintroduction <*> pSingleRef
-        <|> DisjunctionE <$ symbol Tdis <* symbol Telimination <*> pSingleRef <*> pRange <*> pRange
-        <|> Reiterate <$ symbol Treiterate <*> pSingleRef
-        <|> ContradictionE <$ symbol Tcont <* symbol Telimination <*> pSingleRef
-        <|> NegationI <$ pNegation <* symbol Tintroduction <*> pRange
-        <|> NegationE <$ pNegation <* symbol Telimination <*> pSingleRef <*> pSingleRef
-        <|> PBC <$ symbol Tpbc <*> pRange
+pRule = ConjunctionI <$ symbol Tcon <* symbol Tintroduction <*> pRef <*> pRef
+        <|> ConjunctionE <$ symbol Tcon <* symbol Telimination <*> pRef
+        <|> DoubleNegationI <$ pNegation <* pNegation <* symbol Tintroduction <*> pRef
+        <|> DoubleNegationE <$ pNegation <* pNegation <* symbol Telimination <*> pRef
+        <|> ImplicationI <$ symbol Timp <* symbol Tintroduction <*> pRef
+        <|> ImplicationE <$ symbol Timp <* symbol Telimination <*> pRef <*> pRef
+        <|> ModusTollens <$ symbol Tmt <*> pRef <*> pRef
+        <|> DisjunctionI <$ symbol Tdis <* symbol Tintroduction <*> pRef
+        <|> DisjunctionE <$ symbol Tdis <* symbol Telimination <*> pRef <*> pRef <*> pRef
+        <|> Reiterate <$ symbol Treiterate <*> pRef
+        <|> ContradictionE <$ symbol Tcont <* symbol Telimination <*> pRef
+        <|> NegationI <$ pNegation <* symbol Tintroduction <*> pRef
+        <|> NegationE <$ pNegation <* symbol Telimination <*> pRef <*> pRef
+        <|> PBC <$ symbol Tpbc <*> pRef
         <|> LEM <$ symbol Tlem
         <|> Assumption <$ symbol Tassumption
 

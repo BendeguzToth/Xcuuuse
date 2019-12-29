@@ -65,7 +65,7 @@ List of rules supported by Xcuuuse. The number and types (single line or range o
 *Uppercase* ::= A|...|Z  
 *Negsym* ::= - | ~  
 *Consym* ::= & | /\  
-*Dissym* ::= v | \\/ 
+*Dissym* ::= v | \\/  
 *Impsym* ::= -> | =>  
 *Eqsym* ::= = | <=>  
 *Thensym* ::= '|-'  
