@@ -123,7 +123,7 @@ Asssym    ::= "ass"
 
 ## List of rules
 
-List of rules supported by Xcuuuse. The number and types (single line or range of box) are listed. The order of references does not matter, as long as they are of the correct type.
+List of rules supported by Xcuuuse. The number and types (single line or range of box) of references are listed for each rule. The order of references does not matter, as long as they are of the correct type.
 
 * **Conjuntion introduction** `&i` `/\i`  
 ![](rules/conjunction_i.png)  
