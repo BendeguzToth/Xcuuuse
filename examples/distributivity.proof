@@ -1,0 +1,13 @@
+1 P&(QvR)		p
+|- (P&Q)v(P&R)
+
+2 QvR			&e 1
+3 P			&e 1
+4 |* Q			ass
+5 |  P & Q		&i 3, 4
+6 |  (P & Q)v(P & R)	vi 5
+
+7 |* R			ass
+8 |  P & R		&i 3, 7
+9 |  (P & Q)v(P & R)	vi 8
+10 (P & Q)v(P & R)	ve 2, 4-6, 7-9
