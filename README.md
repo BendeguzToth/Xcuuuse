@@ -59,14 +59,14 @@ List of rules supported by Xcuuuse. The number and types (single line or range o
 *Symbol* := *Negsym* | *Consym* | *Dissym* | *Impsym* | *Eqsym*  
 
 
-*Num* ::= 0|...|9  
-*Natural* ::= 1|...|9 | *Natural* *Num*  
+*Num* ::= `0`|...|`9`  
+*Natural* ::= `1`|...|`9` | *Natural* *Num*  
 *Range* ::= *Natural* - *Natural*  
-*Uppercase* ::= A|...|Z  
-*Negsym* ::= - | ~  
-*Consym* ::= & | /\  
-*Dissym* ::= v | \\/  
-*Impsym* ::= -> | =>  
-*Eqsym* ::= = | <=>  
-*Thensym* ::= '|-'  
-*RuleType* ::= i | e
+*Uppercase* ::= `A`|...|`Z`  
+*Negsym* ::= `-` | `~`  
+*Consym* ::= `&` | `/\`  
+*Dissym* ::= `v` | `\/`  
+*Impsym* ::= `->` | `=>`  
+*Eqsym* ::= `=` | `<=>`  
+*Thensym* ::= `|-`  
+*RuleType* ::= `i` | `e`
