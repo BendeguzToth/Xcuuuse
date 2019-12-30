@@ -1,18 +1,18 @@
 # Xcuuuse
-Xcuuuse is a proof checker for natural deduction (currently supporting propositional logic). Given a `.proof` file (specifications below), it is able to assess whether the line reasoning is correct.
+Xcuuuse is a proof checker for natural deduction (currently supporting propositional logic). Given a `.proof` file (specifications below), it is able to assess whether the line of reasoning is correct.
 
 ## Informal description
-The program is provided with a file containing a (partial) proof, and evaluates whether the lines are correctly derived (proof rules has been applied correctly). 
+The program is provided with a file containing a (partial) proof, and evaluates whether the lines are correctly derived (proof rules have been applied correctly). 
 
 ### Propositional formulas
-The basic unit of a propositional formula is the atomic proposition. Such a proposition is denoted with a capital letter, followed by a sequence of zero or more digit or apostrophe. So `P` is a valid formula, and so is `P2`, `P'` but also `P32''32'''4'`. More complicated formulas can be built up of these, by combining them using conjunction, disjunction, negation, implication and equivalence. There are several symbols for each of these operations:  
+The basic unit of a propositional formula is the atomic proposition. Such a proposition is denoted with a capital letter, followed by a sequence of zero or more digits or apostrophes. `P` is a valid formula, and so is `P2`, `P'` but also `P32''32'''4'`. More complicated formulas can be built up of these atomic propositions, by combining them using conjunction, disjunction, negation, implication and equivalence. There are several symbols for each of these operations:  
 * Negation: `~` `-`
 * Conjunction: `&` `/\`
 * Disjunction: `v` `\/`
 * Implication: `=>` `->`
 * Equivalence: `=` `<=>`  
 
-`P&Q` is an example of a more complex formula. When a statement contains of more than one operators, it is parsed according to the standard priorities: Negation binds stronger then conjunction, that is stronger than disjunction, that is stronger than implication, that is stronger than eqivalence. Implication and equivalence associate to the right, the rest associates to the left. Parentheses can be used to give some parts a higher priority. Example of such a formula: `(P&(QvR) => T) => W`.
+`P&Q` is an example of a more complex formula. When a statement contains of more operators, it is parsed according to the standard priorities: Negation binds stronger then conjunction, that is stronger than disjunction, that is stronger than implication, that is stronger than eqivalence. Implication and equivalence associate to the right, the rest associates to the left. Parentheses can be used to give some parts a higher priority. Example of such a formula: `(P&(QvR) => T) => W`.
 
 ### Global structure of a proof
 The proof starts with stating the premises and the supposed conclusion. Note that a proof does not necessarily have to have premises, but it must have exactly one conclusion. A line is generally built up of 3 distinct parts: a line number (numbering must start with 1 on the top of the file, and getting incremented by 1 every new line), a propositional formula, and a justification of that formula. `Number   Formula  Justification`. The file starts with a premise (if there is any), and, because we don't need to derive those, we just put `p` for justification. After that comes the conclusion. This is a somewhat special line, as it does not require any line number and justification, but it starts with a special symbol `|-` and is followed by a formula. An example of stating the assumption and the conclusion:
@@ -21,7 +21,7 @@ The proof starts with stating the premises and the supposed conclusion. Note tha
 |- (P&Q)v(P&R)
 ... proof ...
 ```
-Now each following line is a derivation, that is obtained by applying one of the rules. These lines also start with a number, followed by a scope description, a formula, and a justification.
+Now each following line is a derivation, that is obtained by applying one of the natural deduction rules. These lines also start with a number, followed by a scope description, a formula, and a justification.
 
 ### Scope
 The way of denoting boxes is to put a `|` in the scope part of the line. When a line is in a box that is in another box, it starts with `||`.The first line of each box gets an extra `*`. (It is needed to handle situations where a box is closed, but another one is immediately opened). 
@@ -39,8 +39,8 @@ Here a box is opened at line 2, that contains two other boxes: 3-4 and 5-6. Line
 
 ### Justifications
 A justification contains of a rule and a number of references to other lines. How many references are needed depends on the exact rule.  
-**Note:** providing a justification with an incorrect number of references results into a parser error, that, unlike the other types of errors, does not specify line number. The correct number of references needed for each rule can be found in the grammar.  
-In general, the name of the rule is (any) of its symbol, followed by either an `i` for introduction rules, or an `e` for elimination rules. So `&i` is the conjunction introduction. There are exceptions, some rules have a name instead, like `ass` for assumption, `mt` for modus tollens, `pbc` for proof by contradiction, etc. These can all be on the list of rules below (or specified in the grammar).
+**Note:** providing a justification with an incorrect number of references results into a parser error, that, unlike other types of errors, does not specify a line number. The correct number of references needed for each rule can be found in the grammar.  
+In general, the name of the rule is (any) of its symbols, followed by either an `i` for introduction rules, or an `e` for elimination rules. So `&i` is the conjunction introduction. There are exceptions, some rules have a name instead, like `ass` for assumption, `mt` for modus tollens, `pbc` for proof by contradiction, etc. These can all be found on the list of rules below (or specified in the grammar).
 The proof is correct if the formula of the last line is equivalent to the previously specified conclusion. As an example, here is a proof of disjunction distributivity over conjunctions.
 ```
 1 P & (QvR)		p
@@ -125,35 +125,37 @@ Asssym    ::= "ass"
 
 List of rules supported by Xcuuuse. The number and types (single line or range of box) are listed. The order of references does not matter, as long as they are of the correct type.
 
-**Conjuntion introduction**  
+* **Conjuntion introduction** `&i` `/\i`  
 ![](rules/conjunction_i.png)  
-**Conjunction elimination**  
+* **Conjunction elimination** `&e` `/\e`  
 ![](rules/conjunction_e.png)  
-**Double negation introduction**  
+* **Double negation introduction** `--i` `~~i`  
 ![](rules/dn_i.png)  
-**Double negation elimination**  
+* **Double negation elimination** `--e` `~~e`  
 ![](rules/dn_e.png)  
-**Implication introduction**  
+* **Implication introduction** `=>i` `->i`  
 ![](rules/implies_i.png)  
-**Implication elimination (modus ponens)**  
+* **Implication elimination (modus ponens)** `=>e` `->e`  
 ![](rules/implies_e.png)  
-**Equiavlence introduction**  
-**Equiavlence elimination**  
-**Modus tollens**  
+* **Equiavlence introduction** `=i` `<=>i`  
+![](rules/equivalence_i.png)  
+* **Equiavlence elimination** `=e` `<=>e`  
+![](rules/equivalence_e.png)  
+* **Modus tollens** `mt`  
 ![](rules/mt.png)  
-**Disjunction introduction**  
+* **Disjunction introduction** `vi` `\/i`  
 ![](rules/disjunction_i.png)  
-**Disjunction elimination**  
+* **Disjunction elimination** `ve` `\/e`  
 ![](rules/disjunction_e.png)  
-**Reiterate**  
+* **Reiterate** `r`  
 ![](rules/reiterate.png)  
-**Contradiction elimination**  
+* **Contradiction elimination** `#e`  
 ![](rules/contradiction_e.png)  
-**Negation introduction**  
+* **Negation introduction** `-i` `~i`  
 ![](rules/negation_i.png)  
-**Negation elimination**  
+* **Negation elimination** `-e` `~e` 
 ![](rules/negation_e.png)  
-**Proof by contradiction (reductio ad absurdum)**  
+* **Proof by contradiction (reductio ad absurdum)** `pbc`  
 ![](rules/pbc.png)  
-**Law of excluded middle (tertium non datur)**  
+* **Law of excluded middle (tertium non datur)** `lem`
 ![](rules/lem.png)  
