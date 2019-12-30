@@ -153,9 +153,11 @@ List of rules supported by Xcuuuse. The number and types (single line or range o
 ![](rules/contradiction_e.png)  
 * **Negation introduction** `-i` `~i`  
 ![](rules/negation_i.png)  
-* **Negation elimination** `-e` `~e` 
+* **Negation elimination** `-e` `~e`  
 ![](rules/negation_e.png)  
 * **Proof by contradiction (reductio ad absurdum)** `pbc`  
 ![](rules/pbc.png)  
-* **Law of excluded middle (tertium non datur)** `lem`
+* **Law of excluded middle (tertium non datur)** `lem`  
 ![](rules/lem.png)  
+* **Assumption** `ass`  
+![](rules/ass.png)  
