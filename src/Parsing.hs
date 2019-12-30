@@ -50,6 +50,8 @@ pRule = ConjunctionI <$ symbol Tcon <* symbol Tintroduction <*> pRef <*> pRef
         <|> DoubleNegationE <$ pNegation <* pNegation <* symbol Telimination <*> pRef
         <|> ImplicationI <$ symbol Timp <* symbol Tintroduction <*> pRef
         <|> ImplicationE <$ symbol Timp <* symbol Telimination <*> pRef <*> pRef
+        <|> EquivalenceI <$ symbol Teq <* symbol Tintroduction <*> pRef <*> pRef
+        <|> EquivalenceE <$ symbol Teq <* symbol Telimination <*> pRef
         <|> ModusTollens <$ symbol Tmt <*> pRef <*> pRef
         <|> DisjunctionI <$ symbol Tdis <* symbol Tintroduction <*> pRef
         <|> DisjunctionE <$ symbol Tdis <* symbol Telimination <*> pRef <*> pRef <*> pRef

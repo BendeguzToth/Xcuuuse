@@ -4,7 +4,6 @@ module Xcuuuse (Formula(..),
                 Line(..),
                 Rule(..),
                 Reference(..), 
-                prettyPrint,
                 checkNumbering,
                 update,
                 emptyBox,
@@ -18,10 +17,6 @@ data Proof = Proof {premises :: [Line], conclusion :: Line, derivations :: [Line
 data Line =     Premise {lineNumber :: LineIndex, formula:: Formula}
                 | Conclusion {formula :: Formula}
                 | Derivation {lineNumber :: LineIndex, scope :: Scope, formula :: Formula, rule :: Rule} deriving(Show)
-
--- lineNumber :: Line -> Int
--- lineNumber (Premise i _) = i
--- lineNumber (Derivation i _ _ _) = i
 
 data Formula =  Var String 
                 | Negation Formula 
@@ -39,6 +34,8 @@ data Rule = ConjunctionI Reference Reference
             | DoubleNegationE Reference
             | ImplicationI Reference
             | ImplicationE Reference Reference
+            | EquivalenceI Reference Reference
+            | EquivalenceE Reference
             | ModusTollens Reference Reference
             | DisjunctionI Reference
             | DisjunctionE Reference Reference Reference
@@ -62,22 +59,15 @@ instance Eq Formula where
                                                 | f1 == e2 && f2 == e1 = True
                                                 | otherwise = False
     (Implication p1 c1) == (Implication p2 c2) = p1 == p2 && c1 == c2
-    (Equivalence f1 f2) == (Equivalence e1 e2) = f1 == e1 && f2 == e2
+    (Equivalence f1 f2) == (Equivalence e1 e2)  | f1 == e1 && f2 == e2 = True
+                                                | f1 == e2 && f2 == e1 = True
+    Contradiction == Contradiction = True
     _ == _ = False
-
-
-prettyPrint (Var s) = s
-prettyPrint (Negation f) = "(" ++ "-" ++ (prettyPrint f) ++ ")"
-prettyPrint (Conjunction f1 f2) = "(" ++ (prettyPrint f1) ++ "/\\" ++ (prettyPrint f2) ++ ")"
-prettyPrint (Disjunction f1 f2) = "(" ++ (prettyPrint f1) ++ "\\/" ++ (prettyPrint f2) ++ ")"
-prettyPrint (Implication f1 f2) = "(" ++ (prettyPrint f1) ++ "=>" ++ (prettyPrint f2) ++ ")"
-prettyPrint (Equivalence f1 f2) = "(" ++ (prettyPrint f1) ++ "<=>" ++ (prettyPrint f2) ++ ")"
-
 
 {- 
     Functions to evaluate the specific rules. The first argument
     is always the line at which the reference is found, the remaining
-    formulas are of the referenced lines 
+    formulas are of the referenced lines. 
 -}
 conjunctionIntroduction :: Formula -> Formula -> Formula -> Bool
 conjunctionIntroduction f p1 p2 = Conjunction p1 p2 == f
@@ -99,6 +89,15 @@ implicationIntroduction f f1 f2 = f == Implication f1 f2
 implicationElimination :: Formula -> Formula -> Formula -> Bool
 implicationElimination f f1 f2 =    f1 == Implication f2 f
                                     || f2 == Implication f1 f
+
+equivalenceIntroduction :: Formula -> Formula -> Formula -> Bool
+equivalenceIntroduction (Equivalence p q) (Implication a b) (Implication c d) = p == a && p == d && q == b && q == c
+                                                                                || p == b && p ==c && q == a && q == d
+equivalenceIntroduction _ _ _ = False
+
+equivalenceElimination :: Formula -> Formula -> Bool
+equivalenceElimination (Implication p q) (Equivalence a b) = p == a && q == b || p == b && q == a
+equivalenceElimination _ _ = False
 
 modusTollens :: Formula -> Formula -> Formula -> Bool
 modusTollens (Negation p') (Implication p q) (Negation q') = q == q' && p == p'
@@ -221,6 +220,13 @@ checkLine l@(Derivation _ _ f (ImplicationE r1@(SingleLine _) r2@(SingleLine _))
                         f1 <- ffr r1 box l
                         f2 <- ffr r2 box l
                         Right $ implicationElimination f f1 f2
+checkLine l@(Derivation _ _ f (EquivalenceI r1@(SingleLine _) r2@(SingleLine _))) box = do
+                        f1 <- ffr r1 box l
+                        f2 <- ffr r2 box l
+                        Right $ equivalenceIntroduction f f1 f2
+checkLine l@(Derivation _ _ f (EquivalenceE r@(SingleLine _))) box = do
+                        f1 <- ffr r box l
+                        Right $ equivalenceElimination f f1
 checkLine l@(Derivation _ _ f (ModusTollens r1@(SingleLine _) r2@(SingleLine _))) box = do
                         f1 <- ffr r1 box l
                         f2 <- ffr r2 box l
