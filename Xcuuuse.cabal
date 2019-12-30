@@ -17,8 +17,8 @@ extra-source-files:  CHANGELOG.md, README.md
 
 executable Xcuuuse
   main-is:             Main.hs
-  -- other-modules:
+  other-modules:	Lexing, ParserLib, Parsing, Xcuuuse
   -- other-extensions:
-  build-depends:       base ^>=4.12.0.0
+  build-depends:       base ^>=4.12.0.0, containers
   hs-source-dirs:      src
   default-language:    Haskell2010

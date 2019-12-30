@@ -4,14 +4,22 @@ import Lexing
 import Parsing
 import Xcuuuse
 import Control.Monad
+import System.Environment
+
 main :: IO ()
 main = do
-    x <- readFile "../data/nested.proof"
-    let tokens = parse tokenize x
-        ast@(Proof ps c ds) = parse pProof tokens
-    print ast
-    print $ checkNumbering ast
-    case check ast of
-        (Right _) -> print "Proof is correct."
-        (Left e) -> print e
+    args <- getArgs
+    proof <- readFile (head args)
+    putStrLn $ process proof
     return ()
+
+process :: String -> String
+process proof = case parse tokenize proof of
+    (Left s) -> s
+    (Right tokens) -> case parse pProof tokens of
+        (Left s) -> s
+        (Right ast) -> if checkNumbering ast then
+            case check ast of
+                (Right _) -> "Proof is correct."
+                (Left e) -> e
+                        else "Incorrect line numbering."

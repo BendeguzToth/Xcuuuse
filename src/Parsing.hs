@@ -5,6 +5,11 @@ import Lexing
 import Xcuuuse
 import ParserLib
 
+{-
+    Parsing different operator priorities of a 
+    propositional formula
+-}
+
 prec1 :: Parser Token Formula
 prec1 = chainr prec2 (Equivalence <$ symbol Teq)
 
@@ -21,13 +26,17 @@ prec5 :: Parser Token Formula
 prec5 = (\(Tvar s) ->Var s) <$> satisfy isTvar 
         <|> symbol Topen *> prec1 <* symbol Tclose 
         <|> Negation <$ pNegation <*> prec5
-        <|> Contradiction <$ symbol Tcont
+        <|> Contradiction <$ symbol Tcont where
+            isTvar (Tvar _) = True
+            isTvar _ = False
 
 pFormula :: Parser Token Formula
 pFormula = prec1
 
 pNat :: Parser Token Int
-pNat = foldl (\acc (Tnum n)-> 10*acc + n) 0 <$> greedy' (satisfy isNum)
+pNat = foldl (\acc (Tnum n)-> 10*acc + n) 0 <$> greedy' (satisfy isNum) where
+    isNum (Tnum _) = True
+    isNum _ = False
 
 -- This is needed because the symbol '-' is overloaded in range.
 -- Negation can be either one of the sepcified symbols, or '-'.
@@ -79,16 +88,9 @@ pScope =    Continue . length <$> greedy (symbol Tvertical)
 pProof :: Parser Token Proof
 pProof = Proof <$> many (pPremise <* greedy (symbol Tnewline)) <*> (pConclusion <* greedy (symbol Tnewline)) <*> some (pDerivation <* greedy (symbol Tnewline)) <* eof ()
 
-isTvar (Tvar _) = True
-isTvar _ = False
-
-isNum (Tnum _) = True
-isNum _ = False
-
-
-parse :: Parser s a -> [s] -> a
+parse :: Parser s a -> [s] -> Either String a
 parse p s = let ps = p s
                 (x, r) = head $ ps
-            in if length ps == 1 || length ps == 0 then x else error "Ambiguous grammar."
-
-fullParse xs = parse pFormula (parse tokenize xs)
+            in if length ps == 1 then return x else
+                if length ps == 0 then Left  "Parser error. Probable cause: Not the correct number of references."
+                else error "Ambiguous grammar."

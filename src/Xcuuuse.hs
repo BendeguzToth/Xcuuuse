@@ -138,35 +138,9 @@ lem :: Formula -> Bool
 lem (Conjunction p (Negation p')) = p == p'
 lem _ = False
 
--- Checking if line numbering is done the correct way.
-checkNumbering :: Proof -> Bool
-checkNumbering (Proof p c d) = let  pl = length p
-                                    premOk = all id (map (\(p', n') -> lineNumber p' == n') (zip p [1..]))
-                                    derOk  = all id (map (\(d', n') -> lineNumber d' == n') (zip d [1+pl..]))
-                                    in premOk && derOk
-
-
-                                    
-type Depth = Int
-type LineIndex = Int
-type BoxIndex = (Int, Int)
-
 
 error' :: Line -> String -> String
 error' line msg = "Error on line " ++ (show $ lineNumber line) ++ ". " ++ msg
-
-data Box =  Open {lines :: (M.Map LineIndex Line), boxes :: (M.Map BoxIndex Box), opened :: (Maybe Box)}
-            | Closed {assumption :: Line, local_conclusion :: Line} deriving(Show)
-
-emptyBox :: Box
-emptyBox = Open M.empty M.empty Nothing
-
-initBox :: [Line] -> Box
-initBox ls = Open (M.fromList (map (\l->(lineNumber l, l)) ls)) M.empty Nothing
-
-depth :: Box -> Depth
-depth (Open _ _ Nothing) = 0
-depth (Open _ _ (Just ob)) = 1 + depth ob
 
 invalidRule :: Line -> String
 invalidRule l = error' l "Invalid application of rule with the lines cited."
@@ -290,7 +264,32 @@ check p = do
     result
 
 
+-- Checking if line numbering is done the correct way.
+checkNumbering :: Proof -> Bool
+checkNumbering (Proof p c d) = let  pl = length p
+                                    premOk = all id (map (\(p', n') -> lineNumber p' == n') (zip p [1..]))
+                                    derOk  = all id (map (\(d', n') -> lineNumber d' == n') (zip d [1+pl..]))
+                                    in premOk && derOk
+
+
 {- BOXES -}
+
+type Depth = Int
+type LineIndex = Int
+type BoxIndex = (Int, Int)
+
+data Box =  Open {lines :: (M.Map LineIndex Line), boxes :: (M.Map BoxIndex Box), opened :: (Maybe Box)}
+            | Closed {assumption :: Line, local_conclusion :: Line} deriving(Show)
+
+emptyBox :: Box
+emptyBox = Open M.empty M.empty Nothing
+
+initBox :: [Line] -> Box
+initBox ls = Open (M.fromList (map (\l->(lineNumber l, l)) ls)) M.empty Nothing
+
+depth :: Box -> Depth
+depth (Open _ _ Nothing) = 0
+depth (Open _ _ (Just ob)) = 1 + depth ob
 
 -- Opens a new box, containing line.
 open :: Box -> Line -> Box
@@ -311,6 +310,10 @@ continue :: Box -> Line -> Box
 continue (Open l b Nothing) line = Open (M.insert (lineNumber line) line l) b Nothing
 continue (Open l b (Just ob)) line = Open l b (Just $ continue ob line)
 
+{-
+    Gets a line/box from the environment.
+-}
+
 getLine' :: Box -> LineIndex -> Either String Line
 getLine' (Open l _ Nothing) idx =
     case M.member idx l of
@@ -321,6 +324,7 @@ getLine' (Open l _ (Just bx)) idx =
         True -> Right $ l M.! idx
         False -> getLine' bx idx
 getLine' _ _ = error "getLine called on Closed."
+
 
 getBox :: Box -> BoxIndex -> Either String Box
 getBox (Open _ bs Nothing) idx =
