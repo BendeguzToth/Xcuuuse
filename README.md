@@ -60,6 +60,7 @@ The proof is correct if the formula of the last line is equivalent to the previo
 More examples can be found in the `/examples` folder. There is a list of all proof rules below, as well as the grammar specifications, containing all the rules, their names, number and types of expected references.
 
 ### Remarks
+* Newlines are used as a separator between lines, there must always be at least one newline between two lines. Other whitespaces within lines only serve visual purposes, they get ignored by the parser.
 * The first line of a box needs to be an assumption. Conversely, assumptions can only occur at the first line of boxes.
 * The order in which the references are provided does not matter, as long as they are in the right numbers.
 * "Symmetrical" formulas are treated as equal if after reordering they are equal. So `P&Q == Q&P` is True, and so is `PvQ == QvP`.
@@ -73,21 +74,21 @@ Premise       ::= Natural Formula "p"
 Conclusion    ::= Thensym Formula
 Derivation    ::= Natural Scope Formula Justification
 Scope         ::= ["|"]* ["|*"]?
-Justificatoion::= Consym "i" Reference Reference
+Justificatoion::= Consym "i" Reference RefSep Reference
                   | Consym "e" Reference
                   | Negsym Negsym "i" Reference
                   | Negsym Negsym "e" Reference
                   | Impsym "i" Reference
-                  | Impsym "e" Reference Reference
-                  | Eqsym "i" Reference Refrence
+                  | Impsym "e" Reference RefSep Reference
+                  | Eqsym "i" Reference RefSep Refrence
                   | Eqsym "e" Reference
-                  | MTsym Reference Reference
+                  | MTsym Reference RefSep Reference
                   | Dissym "i" Reference
-                  | Dissym "e" Reference Reference Reference
+                  | Dissym "e" Reference RefSep Reference RefSep Reference
                   | Resym Reference
                   | Contsym "e" Reference
                   | Negsym "i" Reference
-                  | Negsym "e" Reference Reference
+                  | Negsym "e" Reference RefSep Reference
                   | Pbcsym Reference
                   | Lemsym
                   | Asssym
@@ -106,6 +107,7 @@ Contradiction ::= Contsym
 Num       ::= "0"|...|"9"  
 Natural   ::= "1"|...|"9" | Natural Num
 Range     ::= Natural "-" Natural
+RefSep    ::= ","
 Uppercase ::= "A"|...|"Z"
 Negsym    ::= "-" | "~"
 Consym    ::= "&" | "/\"
